@@ -5,12 +5,12 @@
 
 'use client';
 
+import { Download, Trash2, Upload } from 'lucide-react';
 import React, { useState } from 'react';
-import { Save, Play, Download, Upload, Trash2 } from 'lucide-react';
-import { DynamicSchemaBuilder } from '@/components/ui/dynamic-schema-builder';
-import { AIFlowTester } from '@/components/ui/ai-flow-tester';
-import { SchemaDefinition, FlowConfig } from '@/ai/core/types';
-import { DynamicFlowEngine } from '@/ai/core/dynamic-flow-engine';
+import { DynamicFlowEngine } from '../ai/core/dynamic-flow-engine';
+import { FlowConfig, SchemaDefinition } from '../ai/core/types';
+import { AIFlowTester } from '../components/ui/ai-flow-tester';
+import { DynamicSchemaBuilder } from '../components/ui/dynamic-schema-builder';
 
 type ViewMode = 'builder' | 'tester' | 'split';
 
@@ -29,10 +29,10 @@ export default function SchemaBuilderPage() {
   const saveSchema = (schema: SchemaDefinition) => {
     const updatedSchemas = savedSchemas.filter(s => s.id !== schema.id);
     const newSchemas = [...updatedSchemas, schema];
-    
+
     setSavedSchemas(newSchemas);
     localStorage.setItem('ai-schemas', JSON.stringify(newSchemas));
-    
+
     // Also save to dynamic flow engine
     try {
       const validation = DynamicFlowEngine.validateSchema(schema);
@@ -51,7 +51,7 @@ export default function SchemaBuilderPage() {
       if (stored) {
         const schemas = JSON.parse(stored);
         setSavedSchemas(schemas);
-        
+
         // Load schemas into dynamic flow engine
         schemas.forEach((schema: SchemaDefinition) => {
           try {
@@ -77,10 +77,10 @@ export default function SchemaBuilderPage() {
     const updatedSchemas = savedSchemas.filter(s => s.id !== schemaId);
     setSavedSchemas(updatedSchemas);
     localStorage.setItem('ai-schemas', JSON.stringify(updatedSchemas));
-    
+
     // Remove from dynamic flow engine
     DynamicFlowEngine.deleteFlow(schemaId);
-    
+
     // Clear current schema if it was deleted
     if (currentSchema?.id === schemaId) {
       setCurrentSchema(null);
@@ -107,7 +107,7 @@ export default function SchemaBuilderPage() {
     reader.onload = (e) => {
       try {
         const importedSchema: SchemaDefinition = JSON.parse(e.target?.result as string);
-        
+
         // Validate imported schema
         const validation = DynamicFlowEngine.validateSchema(importedSchema);
         if (!validation.valid) {
@@ -118,7 +118,7 @@ export default function SchemaBuilderPage() {
         // Generate new ID to avoid conflicts
         importedSchema.id = `schema_${Date.now()}`;
         importedSchema.metadata.updatedAt = new Date().toISOString();
-        
+
         setCurrentSchema(importedSchema);
         saveSchema(importedSchema);
       } catch (error) {
@@ -126,7 +126,7 @@ export default function SchemaBuilderPage() {
       }
     };
     reader.readAsText(file);
-    
+
     // Clear the input
     event.target.value = '';
   };
@@ -147,39 +147,36 @@ export default function SchemaBuilderPage() {
               <h1 className="text-2xl font-bold text-gray-900">AI Schema Builder</h1>
               <p className="text-sm text-gray-600">Create dynamic schemas for AI flows</p>
             </div>
-            
+
             {/* View Mode Toggle */}
             <div className="flex items-center space-x-4">
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('builder')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    viewMode === 'builder'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'builder'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                    }`}
                 >
                   Builder
                 </button>
                 <button
                   onClick={() => setViewMode('tester')}
                   disabled={!currentSchema}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    viewMode === 'tester'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 disabled:opacity-50'
-                  }`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'tester'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 disabled:opacity-50'
+                    }`}
                 >
                   Tester
                 </button>
                 <button
                   onClick={() => setViewMode('split')}
                   disabled={!currentSchema}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    viewMode === 'split'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 disabled:opacity-50'
-                  }`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === 'split'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 disabled:opacity-50'
+                    }`}
                 >
                   Split View
                 </button>
@@ -210,9 +207,8 @@ export default function SchemaBuilderPage() {
               {savedSchemas.map((schema) => (
                 <div
                   key={schema.id}
-                  className={`border rounded-lg p-4 cursor-pointer transition-colors hover:border-blue-300 ${
-                    currentSchema?.id === schema.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                  }`}
+                  className={`border rounded-lg p-4 cursor-pointer transition-colors hover:border-blue-300 ${currentSchema?.id === schema.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                    }`}
                   onClick={() => loadSchema(schema)}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -284,7 +280,7 @@ export default function SchemaBuilderPage() {
                   onTest={testSchema}
                 />
               </div>
-              
+
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-gray-900">Flow Tester</h2>
                 <AIFlowTester

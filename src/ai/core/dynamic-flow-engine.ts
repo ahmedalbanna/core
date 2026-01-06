@@ -3,15 +3,14 @@
  * Core engine for creating and managing dynamic AI flows
  */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import { ai } from '../../ai/genkit';
 import { SchemaConverter } from './schema-converter';
-import { 
-  SchemaDefinition, 
-  FlowConfig, 
+import {
   DynamicFlow,
-  SchemaValidationResult 
+  FlowConfig,
+  SchemaDefinition
 } from './types';
+
 
 export class DynamicFlowEngine {
   private static flows = new Map<string, DynamicFlow>();
@@ -26,7 +25,7 @@ export class DynamicFlowEngine {
     implementation?: string
   ): DynamicFlow {
     const { inputSchema, outputSchema } = SchemaConverter.convertToZod(schema);
-    
+
     // Default implementation if none provided
     const defaultImplementation = this.generateDefaultImplementation(schema, config);
     const flowImplementation = implementation || defaultImplementation;
@@ -82,7 +81,7 @@ export class DynamicFlowEngine {
    * Execute a dynamic flow
    */
   static async executeFlow(
-    schemaId: string, 
+    schemaId: string,
     input: any,
     options?: {
       validateInput?: boolean;
@@ -108,11 +107,11 @@ export class DynamicFlowEngine {
       // Input validation
       if (options?.validateInput !== false) {
         const validation = SchemaConverter.validateData(
-          input, 
-          dynamicFlow.schema.input.fields, 
+          input,
+          dynamicFlow.schema.input.fields,
           true
         );
-        
+
         if (!validation.valid) {
           return {
             success: false,
@@ -127,11 +126,11 @@ export class DynamicFlowEngine {
       // Output validation
       if (options?.validateOutput !== false) {
         const validation = SchemaConverter.validateData(
-          result, 
-          dynamicFlow.schema.output.fields, 
+          result,
+          dynamicFlow.schema.output.fields,
           false
         );
-        
+
         if (!validation.valid) {
           console.warn('Output validation failed:', validation.errors);
           // Don't fail execution for output validation, just warn
@@ -181,7 +180,7 @@ export class DynamicFlowEngine {
 
     // Recreate the flow with updates
     this.createFlow(existingFlow.schema, existingFlow.config, existingFlow.implementation);
-    
+
     return true;
   }
 
@@ -213,10 +212,10 @@ export class DynamicFlowEngine {
       f => f.name.toLowerCase().includes('system') || f.name.toLowerCase().includes('persona')
     );
     const userPromptField = schema.input.fields.find(
-      f => f.name.toLowerCase().includes('prompt') || 
-          f.name.toLowerCase().includes('message') ||
-          f.name.toLowerCase().includes('query') ||
-          f.name.toLowerCase().includes('request')
+      f => f.name.toLowerCase().includes('prompt') ||
+        f.name.toLowerCase().includes('message') ||
+        f.name.toLowerCase().includes('query') ||
+        f.name.toLowerCase().includes('request')
     );
 
     // Determine output format
@@ -225,13 +224,13 @@ export class DynamicFlowEngine {
 
     return `
 // Auto-generated implementation for ${schema.name}
-const systemPrompt = input.${systemPromptField?.name || 'systemPrompt'} || 
-  config.systemPrompt || 
+const systemPrompt = input.${systemPromptField?.name || 'systemPrompt'} ||
+  config.systemPrompt ||
   'You are a helpful AI assistant. Respond according to the user\\'s request.';
 
-const userPrompt = input.${userPromptField?.name || 'userPrompt'} || 
-  input.message || 
-  input.query || 
+const userPrompt = input.${userPromptField?.name || 'userPrompt'} ||
+  input.message ||
+  input.query ||
   'Please help me with my request.';
 
 // Generate AI response
@@ -245,18 +244,18 @@ const response = await ai.generate({
   },
 });
 
-${singleStringOutput ? 
-  `// Return simple string response
+${singleStringOutput ?
+        `// Return simple string response
 return response.text;` :
-  `// Return structured response
+        `// Return structured response
 const result = {};
 ${outputFields.map(field => {
-  if (field.type === 'string') {
-    return `result.${field.name} = response.text;`;
-  } else {
-    return `result.${field.name} = response.text; // Auto-converted to ${field.type}`;
-  }
-}).join('\n')}
+          if (field.type === 'string') {
+            return `result.${field.name} = response.text;`;
+          } else {
+            return `result.${field.name} = response.text; // Auto-converted to ${field.type}`;
+          }
+        }).join('\n')}
 
 return result;`}`;
   }
@@ -339,7 +338,7 @@ return result;`}`;
     try {
       const schema: SchemaDefinition = JSON.parse(jsonSchema);
       const validation = this.validateSchema(schema);
-      
+
       if (!validation.valid) {
         return {
           success: false,

@@ -5,10 +5,10 @@
 
 'use client';
 
-import { DynamicFlowEngine } from '@/ai/core/dynamic-flow-engine';
-import { FieldType, SchemaDefinition, SchemaField } from '@/ai/core/types';
 import { Code, Eye, Play, Plus, Save } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { DynamicFlowEngine } from '../../ai/core/dynamic-flow-engine';
+import { FieldType, SchemaDefinition, SchemaField } from '../../ai/core/types';
 import { SchemaFieldEditor } from './schema-field-editor';
 import { SchemaCodeView, SchemaPreview } from './schema-preview';
 interface DynamicSchemaBuilderProps {
@@ -190,8 +190,8 @@ export function DynamicSchemaBuilder({
               <button
                 onClick={() => setActiveTab('build')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'build'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 Build
@@ -199,8 +199,8 @@ export function DynamicSchemaBuilder({
               <button
                 onClick={() => setActiveTab('preview')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'preview'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 <Eye className="w-4 h-4 mr-1 inline" />
@@ -209,8 +209,8 @@ export function DynamicSchemaBuilder({
               <button
                 onClick={() => setActiveTab('code')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'code'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
                 <Code className="w-4 h-4 mr-1 inline" />

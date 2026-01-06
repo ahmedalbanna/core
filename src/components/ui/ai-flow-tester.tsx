@@ -5,11 +5,11 @@
 
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { Play, Square, Download, Upload, Settings, Loader } from 'lucide-react';
-import { SchemaDefinition, FlowConfig } from '@/ai/core/types';
-import { DynamicFlowEngine } from '@/ai/core/dynamic-flow-engine';
-import { SchemaConverter } from '@/ai/core/schema-converter';
+import { Download, Loader, Play, Settings, Upload } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { DynamicFlowEngine } from '../../ai/core/dynamic-flow-engine';
+import { SchemaConverter } from '../../ai/core/schema-converter';
+import { FlowConfig, SchemaDefinition } from '../../ai/core/types';
 
 interface AIFlowTesterProps {
   schema: SchemaDefinition;
@@ -17,10 +17,10 @@ interface AIFlowTesterProps {
   initialConfig?: FlowConfig;
 }
 
-export function AIFlowTester({ 
-  schema, 
+export function AIFlowTester({
+  schema,
   onConfigChange,
-  initialConfig 
+  initialConfig
 }: AIFlowTesterProps) {
   const [config, setConfig] = useState<FlowConfig>(
     initialConfig || {
@@ -30,7 +30,7 @@ export function AIFlowTester({
       streaming: false
     }
   );
-  
+
   const [inputData, setInputData] = useState<Record<string, any>>({});
   const [outputData, setOutputData] = useState<any>(null);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -42,7 +42,7 @@ export function AIFlowTester({
     duration: number;
     error?: string;
   }>>([]);
-  
+
   const [showConfig, setShowConfig] = useState(false);
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,7 +57,7 @@ export function AIFlowTester({
   // Handle input field changes
   const handleInputChange = (fieldName: string, value: any) => {
     setInputData(prev => ({ ...prev, [fieldName]: value }));
-    
+
     // Clear validation errors for this field
     setValidationErrors(prev => prev.filter(error => error.field !== fieldName));
   };
@@ -101,10 +101,10 @@ export function AIFlowTester({
           duration
         }, ...prev.slice(0, 9)]); // Keep last 10 executions
       } else {
-        const errorMessage = result.errors?.join(', ') || 
-                           result.validationErrors?.map(e => e.message).join(', ') ||
-                           'Unknown error';
-        
+        const errorMessage = result.errors?.join(', ') ||
+          result.validationErrors?.map(e => e.message).join(', ') ||
+          'Unknown error';
+
         setExecutionHistory(prev => [{
           timestamp: new Date().toISOString(),
           input: { ...inputData },
@@ -119,7 +119,7 @@ export function AIFlowTester({
     } catch (error) {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+
       setExecutionHistory(prev => [{
         timestamp: new Date().toISOString(),
         input: { ...inputData },
@@ -138,9 +138,8 @@ export function AIFlowTester({
     const value = inputData[field.name] || (field.defaultValue ?? '');
     const hasError = validationErrors.some(error => error.field === field.name);
 
-    const baseClassName = `w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
-      hasError ? 'border-red-500' : 'border-gray-300'
-    }`;
+    const baseClassName = `w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${hasError ? 'border-red-500' : 'border-gray-300'
+      }`;
 
     switch (field.type) {
       case 'string':
@@ -158,7 +157,7 @@ export function AIFlowTester({
             maxLength={field.validation?.max}
           />
         );
-      
+
       case 'number':
         return (
           <input
@@ -173,7 +172,7 @@ export function AIFlowTester({
             step="any"
           />
         );
-      
+
       case 'boolean':
         return (
           <select
@@ -187,7 +186,7 @@ export function AIFlowTester({
             <option value="false">False</option>
           </select>
         );
-      
+
       case 'date':
         return (
           <input
@@ -198,7 +197,7 @@ export function AIFlowTester({
             required={field.required}
           />
         );
-      
+
       case 'array':
       case 'object':
         return (
@@ -219,7 +218,7 @@ export function AIFlowTester({
             required={field.required}
           />
         );
-      
+
       default:
         return (
           <textarea
@@ -243,7 +242,7 @@ export function AIFlowTester({
       output: outputData,
       timestamp: new Date().toISOString()
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -279,18 +278,17 @@ export function AIFlowTester({
           <h2 className="text-2xl font-bold text-gray-900">AI Flow Tester</h2>
           <p className="text-gray-600">Test your {schema.name} schema</p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setShowConfig(!showConfig)}
-            className={`p-2 rounded-lg border transition-colors ${
-              showConfig ? 'bg-blue-50 border-blue-300' : 'border-gray-300 hover:bg-gray-50'
-            }`}
+            className={`p-2 rounded-lg border transition-colors ${showConfig ? 'bg-blue-50 border-blue-300' : 'border-gray-300 hover:bg-gray-50'
+              }`}
             title="Configuration"
           >
             <Settings className="w-5 h-5" />
           </button>
-          
+
           <input
             ref={fileInputRef}
             type="file"
@@ -305,7 +303,7 @@ export function AIFlowTester({
           >
             <Upload className="w-5 h-5" />
           </button>
-          
+
           <button
             onClick={exportTestData}
             className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -320,7 +318,7 @@ export function AIFlowTester({
       {showConfig && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold mb-4">Flow Configuration</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -336,7 +334,7 @@ export function AIFlowTester({
                 <option value="googleai/gemini-pro">Gemini Pro</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Temperature ({config.temperature})
@@ -351,7 +349,7 @@ export function AIFlowTester({
                 className="w-full"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Max Tokens
@@ -367,7 +365,7 @@ export function AIFlowTester({
               />
             </div>
           </div>
-          
+
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               System Prompt Override
@@ -390,11 +388,10 @@ export function AIFlowTester({
           <button
             onClick={executeFlow}
             disabled={isExecuting || schema.input.fields.length === 0}
-            className={`flex items-center px-6 py-2 rounded-lg font-medium transition-colors ${
-              isExecuting
+            className={`flex items-center px-6 py-2 rounded-lg font-medium transition-colors ${isExecuting
                 ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700'
-            }`}
+              }`}
           >
             {isExecuting ? (
               <>
@@ -413,20 +410,20 @@ export function AIFlowTester({
         <div className="space-y-4">
           {schema.input.fields.map((field, index) => {
             const fieldErrors = validationErrors.filter(error => error.field === field.name);
-            
+
             return (
               <div key={index}>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {field.label || field.name}
                   {field.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                
+
                 {renderInputField(field)}
-                
+
                 {field.description && (
                   <p className="text-sm text-gray-500 mt-1">{field.description}</p>
                 )}
-                
+
                 {fieldErrors.length > 0 && (
                   <div className="mt-1">
                     {fieldErrors.map((error, errorIndex) => (
@@ -451,7 +448,7 @@ export function AIFlowTester({
       {/* Output Display */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Output</h3>
-        
+
         {outputData ? (
           <div className="bg-gray-50 rounded-lg p-4">
             <pre className="text-sm text-gray-800 whitespace-pre-wrap overflow-auto">
@@ -469,22 +466,20 @@ export function AIFlowTester({
       {executionHistory.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Execution History</h3>
-          
+
           <div className="space-y-3">
             {executionHistory.map((execution, index) => (
               <div
                 key={index}
-                className={`p-4 rounded-lg border ${
-                  execution.success
+                className={`p-4 rounded-lg border ${execution.success
                     ? 'bg-green-50 border-green-200'
                     : 'bg-red-50 border-red-200'
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <span className={`w-2 h-2 rounded-full ${
-                      execution.success ? 'bg-green-500' : 'bg-red-500'
-                    }`} />
+                    <span className={`w-2 h-2 rounded-full ${execution.success ? 'bg-green-500' : 'bg-red-500'
+                      }`} />
                     <span className="text-sm text-gray-600">
                       {new Date(execution.timestamp).toLocaleString()}
                     </span>
@@ -492,7 +487,7 @@ export function AIFlowTester({
                       {execution.duration}ms
                     </span>
                   </div>
-                  
+
                   {!execution.success && execution.error && (
                     <span className="text-sm text-red-600">
                       {execution.error}

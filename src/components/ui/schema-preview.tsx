@@ -5,10 +5,10 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { Copy, Check, Download, ExternalLink } from 'lucide-react';
-import { SchemaDefinition } from '@/ai/core/types';
-import { SchemaConverter } from '@/ai/core/schema-converter';
+import { Check, Copy } from 'lucide-react';
+import { useState } from 'react';
+import { SchemaConverter } from '../../ai/core/schema-converter';
+import { SchemaDefinition } from '../../ai/core/types';
 
 interface SchemaPreviewProps {
   schema: SchemaDefinition;
@@ -44,7 +44,7 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
             required={field.required}
           />
         );
-      
+
       case 'number':
         return (
           <input
@@ -58,7 +58,7 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
             max={field.validation?.max}
           />
         );
-      
+
       case 'boolean':
         return (
           <select
@@ -72,7 +72,7 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
             <option value="false">False</option>
           </select>
         );
-      
+
       case 'date':
         return (
           <input
@@ -83,15 +83,15 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
             required={field.required}
           />
         );
-      
+
       default:
         return (
           <textarea
             value={typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
             onChange={(e) => {
               try {
-                const parsed = field.type === 'object' || field.type === 'array' 
-                  ? JSON.parse(e.target.value) 
+                const parsed = field.type === 'object' || field.type === 'array'
+                  ? JSON.parse(e.target.value)
                   : e.target.value;
                 handleInputChange(field.name, parsed);
               } catch {
@@ -167,14 +167,12 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
 
         {/* Validation Results */}
         {validationResult && (
-          <div className={`mt-6 p-4 rounded-lg ${
-            validationResult.valid 
-              ? 'bg-green-50 border border-green-200' 
+          <div className={`mt-6 p-4 rounded-lg ${validationResult.valid
+              ? 'bg-green-50 border border-green-200'
               : 'bg-red-50 border border-red-200'
-          }`}>
-            <h4 className={`font-medium ${
-              validationResult.valid ? 'text-green-800' : 'text-red-800'
             }`}>
+            <h4 className={`font-medium ${validationResult.valid ? 'text-green-800' : 'text-red-800'
+              }`}>
               {validationResult.valid ? '✅ Validation Passed' : '❌ Validation Failed'}
             </h4>
             {!validationResult.valid && validationResult.errors.length > 0 && (
@@ -210,7 +208,7 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
       {/* JSON Preview */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">JSON Structure</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Input JSON</h4>
@@ -218,13 +216,13 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
               {JSON.stringify(
                 Object.fromEntries(
                   schema.input.fields.map(field => [
-                    field.name, 
+                    field.name,
                     field.type === 'string' ? 'sample text' :
-                    field.type === 'number' ? 42 :
-                    field.type === 'boolean' ? true :
-                    field.type === 'array' ? ['item1', 'item2'] :
-                    field.type === 'object' ? { key: 'value' } :
-                    'sample value'
+                      field.type === 'number' ? 42 :
+                        field.type === 'boolean' ? true :
+                          field.type === 'array' ? ['item1', 'item2'] :
+                            field.type === 'object' ? { key: 'value' } :
+                              'sample value'
                   ])
                 ),
                 null,
@@ -232,7 +230,7 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
               )}
             </pre>
           </div>
-          
+
           <div>
             <h4 className="font-medium text-gray-700 mb-2">Output JSON</h4>
             <pre className="bg-gray-100 p-3 rounded-md text-sm overflow-auto max-h-64">
@@ -240,16 +238,16 @@ export function SchemaPreview({ schema }: SchemaPreviewProps) {
                 schema.output.fields.length === 1 && schema.output.fields[0].type === 'string'
                   ? 'AI generated response...'
                   : Object.fromEntries(
-                      schema.output.fields.map(field => [
-                        field.name,
-                        field.type === 'string' ? 'AI generated response...' :
+                    schema.output.fields.map(field => [
+                      field.name,
+                      field.type === 'string' ? 'AI generated response...' :
                         field.type === 'number' ? 95.5 :
-                        field.type === 'boolean' ? true :
-                        field.type === 'array' ? ['result1', 'result2'] :
-                        field.type === 'object' ? { analysis: 'detailed' } :
-                        'AI result'
-                      ])
-                    ),
+                          field.type === 'boolean' ? true :
+                            field.type === 'array' ? ['result1', 'result2'] :
+                              field.type === 'object' ? { analysis: 'detailed' } :
+                                'AI result'
+                    ])
+                  ),
                 null,
                 2
               )}
@@ -338,31 +336,28 @@ export const ${schema.name.toLowerCase()}Flow = ai.defineFlow(
         <div className="flex bg-gray-100 rounded-lg p-1">
           <button
             onClick={() => setActiveTab('typescript')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'typescript'
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'typescript'
                 ? 'bg-white text-blue-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
-            }`}
+              }`}
           >
             TypeScript
           </button>
           <button
             onClick={() => setActiveTab('zod')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'zod'
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'zod'
                 ? 'bg-white text-blue-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
-            }`}
+              }`}
           >
             Zod Schemas
           </button>
           <button
             onClick={() => setActiveTab('json')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              activeTab === 'json'
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'json'
                 ? 'bg-white text-blue-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
-            }`}
+              }`}
           >
             JSON
           </button>
